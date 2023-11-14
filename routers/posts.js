@@ -9,8 +9,6 @@ const router = express.Router();
 
 // importo il controller
 const postsController = require("../controllers/postsController");
-const multer = require("multer");
-
 
 
 
@@ -26,7 +24,7 @@ router.get("/:id", postsController.show);
 router.post("/create", postsController.create);
 
 // store
-router.post("/", multer().none, postsController.store);
+router.post("/", multer().none(), postsController.store);
 
 // download immagine
 // router.get("/:id/download", postsController.show);
