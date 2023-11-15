@@ -2,6 +2,10 @@
 const mieiPosts = require("../db/db.json");
 // importo il path
 const path = require("path");
+// importo modulo fs
+const fs = require('fs');
+//importo kebabCase di lodash
+const { kebabCase } = require("lodash");
 // const { post } = require("../routers/posts");
 
 // index
@@ -62,8 +66,30 @@ function show(req, res) {
 //store
 function store(req, res) {
     console.log(req.body);
-    // console.log(req.query);
-    res.send("ok!");
+
+    // leggo il db
+    const posts = require('../db/db.json');
+
+    // Creo il nuovo post
+    const newPost = {
+        slug: kebabCase(req.body.title),
+        ...req.body,
+    };
+
+    // Cerco la posizione in cui inserire il nuovo post in modo che mantenga l'ordine alfabetico
+    const insertIndex = posts.findIndex(post => post.slug.toLowerCase() > newPost.slug.toLowerCase());
+
+    // Inserisco il nuovo post nella posizione corretta
+    posts.splice(insertIndex === -1 ? posts.length : insertIndex, 0, newPost);
+
+    // Converto il DB in JSON
+    const json = JSON.stringify(posts, null, 2);
+
+    // Scrivo il JSON su file
+    fs.writeFileSync(path.resolve(__dirname, '..', 'db', 'db.json'), json);
+
+    // Restituisco il dato inserito
+    res.json(newPost);
 }
 
 // create
